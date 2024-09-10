@@ -69,8 +69,8 @@ public class ItemRepositoryInMemory implements ItemRepository {
   }
 
   @Override
-  public List<Item> findAllByUserId(final Long OwnerId) {
-    return items.getOrDefault(OwnerId, Collections.emptyList());
+  public List<Item> findAllByUserId(final Long ownerId) {
+    return items.getOrDefault(ownerId, Collections.emptyList());
   }
 
   @Override

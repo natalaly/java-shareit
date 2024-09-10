@@ -36,9 +36,9 @@ public interface ItemRepository {
 
   Optional<Item> findById(Long itemId);
 
-  Optional<Item> findByItemIdAndOwnerId(Long itemId, Long OwnerId);
+  Optional<Item> findByItemIdAndOwnerId(Long itemId, Long ownerId);
 
-  List<Item> findAllByUserId(Long OwnerId);
+  List<Item> findAllByUserId(Long ownerId);
 
   List<Item> findByText(String text);
 
