@@ -6,6 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicatedDataException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 
 /**
  * Service implementation class for managing user-related operations.
@@ -13,6 +17,7 @@ import ru.practicum.shareit.exception.NotFoundException;
  * @see User
  * @see UserDto
  * @see UserRepository
+ * @see ItemRepository
  */
 @Service
 @RequiredArgsConstructor
@@ -20,6 +25,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
+  private final ItemRepository itemRepository;
 
   @Override
   public List<UserDto> getAllUsers() {
@@ -42,17 +48,22 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDto updateUser(final UserDto userDto, final Long userId) {
-    validateUserExist(userId);
+    final User userToUpdate = getByIdOrThrow(userId);
     if (userDto.getEmail() != null) {
-      validateEmailUnique(userDto.getEmail());
+      validateEmailUnique(userDto.getEmail(), userId);
+      userToUpdate.setEmail(userDto.getEmail());
     }
-    return UserMapper.mapToUserDto(userRepository.update(UserMapper.mapToUser(userDto), userId));
+    if (userDto.getName() != null) {
+      userToUpdate.setName(userDto.getName());
+    }
+    return UserMapper.mapToUserDto(userRepository.update(userToUpdate));
   }
 
   @Override
-  public void deleteUserById(Long id) {
+  public void deleteUserById(final Long id) {
     validateUserExist(id);
     userRepository.deleteById(id);
+    itemRepository.deleteByOwnerId(id);
   }
 
   @Override
@@ -65,7 +76,7 @@ public class UserServiceImpl implements UserService {
     log.debug("Success in validating user id {} is not null and exist in DB", id);
   }
 
-  private User getByIdOrThrow(Long id) {
+  private User getByIdOrThrow(final Long id) {
     log.debug("Getting a user instance for ID = {} from the repository", id);
     return userRepository.findById(id)
         .orElseThrow(() -> {
@@ -74,9 +85,9 @@ public class UserServiceImpl implements UserService {
         });
   }
 
-  private void validateEmailUnique(final String email) {
+  private void validateEmailUnique(final String email, final Long... userId) {
     log.debug("Validating email {} is not null and does not exist in DB", email);
-    if (email == null || email.isBlank() || userRepository.existsByEmail(email)) {
+    if (email == null || email.isBlank() || userRepository.existsEmail(email, userId)) {
       log.warn("Email {} already exists in the DB ", email);
       throw new DuplicatedDataException("User with Email  " + email + " is already exists.");
     }

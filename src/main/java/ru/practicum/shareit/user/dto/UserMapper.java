@@ -1,7 +1,8 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
 import java.util.Objects;
 import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.user.model.User;
 
 /**
  * Utility class for mapping between {@link User} entities and {@link UserDto}. This class provides

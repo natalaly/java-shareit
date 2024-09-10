@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import java.util.List;
+import ru.practicum.shareit.user.dto.UserDto;
 
 /**
  * A service interface for managing user-related operations and interactions.

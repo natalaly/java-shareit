@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.validation.Create;
+import ru.practicum.shareit.validation.Update;
 
 
 /**
@@ -61,7 +64,7 @@ public class UserController {
         .buildAndExpand(userSaved.getId())
         .toUri();
 
-    log.info("User created successfully with ID {}", user.getId());
+    log.info("User created successfully with ID {} at {}.", userSaved.getId(), location.toString());
     return ResponseEntity.created(location).body(userSaved);
   }
 

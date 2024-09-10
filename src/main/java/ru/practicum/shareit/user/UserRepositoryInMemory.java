@@ -1,10 +1,14 @@
 package ru.practicum.shareit.user;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.user.model.User;
 
 /**
  * An in-memory implementation of the {@link UserRepository} interface.
@@ -40,15 +44,9 @@ public class UserRepositoryInMemory implements UserRepository {
   }
 
   @Override
-  public User update(final User user, Long id) {
-    User userToUpdate = users.get(id);
-    if (user.getName() != null) {
-      userToUpdate.setName(user.getName());
-    }
-    if (user.getEmail() != null) {
-      userToUpdate.setEmail(user.getEmail());
-    }
-    return userToUpdate;
+  public User update(final User user) {
+    users.put(user.getId(), user);
+    return user;
   }
 
   @Override
@@ -57,10 +55,17 @@ public class UserRepositoryInMemory implements UserRepository {
   }
 
   @Override
-  public boolean existsByEmail(final String email) {
+  public boolean existsEmail(final String email, final Long... userId) {
+    if (userId == null || userId.length == 0) {
+      return users.values().stream()
+          .anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
+    }
+    Set<Long> userIdSet = new HashSet<>(Arrays.asList(userId));
     return users.values().stream()
-        .anyMatch(u -> u.getEmail().equals(email));
+        .anyMatch(u -> u.getEmail().equalsIgnoreCase(email) &&
+            !userIdSet.contains(u.getId()));
   }
+
 
   @Override
   public boolean existsById(final Long id) {

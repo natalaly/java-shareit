@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import java.util.Collection;
 import java.util.Optional;
+import ru.practicum.shareit.user.model.User;
 
 /**
  * A repository interface for managing user persistence and retrieval operations.
@@ -14,9 +15,9 @@ import java.util.Optional;
  *   <li>{@link #findAll()}: Retrieves all users from the storage.</li>
  *   <li>{@link #findById(Long)}: Retrieves a user by their ID.</li>
  *   <li>{@link #save(User)}: Saves a new user to the storage.</li>
- *   <li>{@link #update(User, Long)}: Updates an existing user in the storage.</li>
+ *   <li>{@link #update(User)}: Updates an existing user in the storage.</li>
  *   <li>{@link #deleteById(Long)}: Deletes a user by their ID.</li>
- *   <li>{@link #existsByEmail(String)}: Checks if a user exists with the given email.</li>
+ *   <li>{@link #existsEmail(String, Long...)}: Checks if a given email is already used by other than current user.</li>
  *   <li>{@link #existsById(Long)}: Checks if a user exists with the given ID.</li>
  * </ul>
  *
@@ -31,11 +32,11 @@ public interface UserRepository {
 
   User save(User user);
 
-  User update(User user, Long userId);
+  User update(User user);
 
   void deleteById(Long id);
 
-  boolean existsByEmail(String email);
+  boolean existsEmail(String email, Long... userId);
 
   boolean existsById(Long id);
 
