@@ -33,10 +33,12 @@ import ru.practicum.shareit.validation.Update;
 @Validated
 public class ItemController {
 
+  private static final String USER_ID_HEADER = "X-Sharer-User-Id";
+
   private final ItemService itemService;
 
   @PostMapping
-  public ResponseEntity<ItemDto> addNewItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+  public ResponseEntity<ItemDto> addNewItem(@RequestHeader(USER_ID_HEADER) Long userId,
                                             @Validated(Create.class) @RequestBody ItemDto item) {
     log.info("Received request POST /items for user with ID {} to add item {}", userId, item);
     ItemDto itemSaved = itemService.saveItem(userId, item);
@@ -50,7 +52,7 @@ public class ItemController {
   }
 
   @PatchMapping("/{itemId}")
-  public ResponseEntity<ItemDto> updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+  public ResponseEntity<ItemDto> updateItem(@RequestHeader(USER_ID_HEADER) Long userId,
                                             @Validated(Update.class) @RequestBody ItemDto item,
                                             @PathVariable("itemId") @NotNull @Positive Long itemId) {
     log.info("Received request PATCH /items/{} for user,ID {} to update with data {}", itemId,
@@ -62,7 +64,7 @@ public class ItemController {
 
   @GetMapping
   public ResponseEntity<List<ItemDto>> getAllItemFromUser(
-      @RequestHeader("X-Sharer-User-Id") Long userId) {
+      @RequestHeader(USER_ID_HEADER) Long userId) {
     log.info("Received request GET /items from user with ID {}.", userId);
     List<ItemDto> items = itemService.getUserItems(userId);
     log.info("Returning {} items from user {} ", items.size(), userId);
@@ -70,7 +72,7 @@ public class ItemController {
   }
 
   @GetMapping("/{itemId}")
-  public ResponseEntity<ItemDto> getItemById(@RequestHeader("X-Sharer-User-Id") Long userId,
+  public ResponseEntity<ItemDto> getItemById(@RequestHeader(USER_ID_HEADER) Long userId,
                                              @PathVariable("itemId") @NotNull @Positive Long itemId) {
     log.info("Received request from user {} GET /items/{}.", userId, itemId);
     ItemDto item = itemService.getItemById(itemId);
@@ -80,7 +82,7 @@ public class ItemController {
 
   @GetMapping("/search")
   public ResponseEntity<List<ItemDto>> searchItemByPartialText(
-      @RequestHeader("X-Sharer-User-Id") Long userId,
+      @RequestHeader(USER_ID_HEADER) Long userId,
       @RequestParam(name = "text") @NotNull String text) {
     log.info("Received request GET /items/search?text={} for user with ID {}.", text,
         userId);

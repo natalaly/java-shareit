@@ -4,7 +4,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.DuplicatedDataException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -41,7 +40,6 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDto createNewUser(final UserDto userDto) {
-    validateEmailUnique(userDto.getEmail());
     return UserMapper.mapToUserDto(
         userRepository.save(UserMapper.mapToUser(userDto)));
   }
@@ -50,7 +48,6 @@ public class UserServiceImpl implements UserService {
   public UserDto updateUser(final UserDto userDto, final Long userId) {
     final User userToUpdate = getByIdOrThrow(userId);
     if (userDto.getEmail() != null) {
-      validateEmailUnique(userDto.getEmail(), userId);
       userToUpdate.setEmail(userDto.getEmail());
     }
     if (userDto.getName() != null) {
@@ -84,14 +81,4 @@ public class UserServiceImpl implements UserService {
           return new NotFoundException("User with ID = " + id + " not found.");
         });
   }
-
-  private void validateEmailUnique(final String email, final Long... userId) {
-    log.debug("Validating email {} is not null and does not exist in DB", email);
-    if (email == null || email.isBlank() || userRepository.existsEmail(email, userId)) {
-      log.warn("Email {} already exists in the DB ", email);
-      throw new DuplicatedDataException("User with Email  " + email + " is already exists.");
-    }
-    log.debug("Success in validating user email {} is not null and does not exist in DB", email);
-  }
-
 }

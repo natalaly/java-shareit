@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.utils.CopyUtil;
 
 /**
  * An in-memory implementation of the {@link ItemRepository} interface.
@@ -36,7 +37,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
     final Long id = generateId();
     item.setId(id);
     items.computeIfAbsent(item.getOwner().getId(), k -> new ArrayList<>()).add(item);
-    return item;
+    return copy(item);
   }
 
   @Override
@@ -47,7 +48,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
           .map((currentItem -> currentItem.getId().equals(item.getId()) ? item : currentItem))
           .toList();
       items.put(item.getOwner().getId(), userItems);
-      return item;
+      return copy(item);
     } else {
       throw new NotFoundException("Item or owner not found.");
     }
@@ -58,6 +59,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
     return items.values().stream()
         .flatMap(Collection::stream)
         .filter(i -> i.getId().equals(itemId))
+        .map(this::copy)
         .findFirst();
   }
 
@@ -65,12 +67,15 @@ public class ItemRepositoryInMemory implements ItemRepository {
   public Optional<Item> findByItemIdAndOwnerId(final Long itemId, final Long ownerId) {
     return items.get(ownerId).stream()
         .filter(i -> i.getId().equals(itemId))
+        .map(this::copy)
         .findFirst();
   }
 
   @Override
   public List<Item> findAllByUserId(final Long ownerId) {
-    return items.getOrDefault(ownerId, Collections.emptyList());
+    return items.getOrDefault(ownerId, Collections.emptyList()).stream()
+        .map(this::copy)
+        .toList();
   }
 
   @Override
@@ -83,6 +88,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
         .filter(i -> i.isAvailable() &&
             (i.getName().toLowerCase().contains(text.toLowerCase()) ||
                 i.getDescription().toLowerCase().contains(text.toLowerCase())))
+        .map(this::copy)
         .collect(Collectors.toList());
 
   }
@@ -95,5 +101,9 @@ public class ItemRepositoryInMemory implements ItemRepository {
   @Override
   public boolean isExistedOwner(final Long userId) {
     return items.containsKey(userId);
+  }
+
+  private Item copy(final Item item) {
+    return CopyUtil.copy(item, Item.class);
   }
 }

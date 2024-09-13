@@ -17,7 +17,6 @@ import ru.practicum.shareit.user.model.User;
  *   <li>{@link #save(User)}: Saves a new user to the storage.</li>
  *   <li>{@link #update(User)}: Updates an existing user in the storage.</li>
  *   <li>{@link #deleteById(Long)}: Deletes a user by their ID.</li>
- *   <li>{@link #existsEmail(String, Long...)}: Checks if a given email is already used by other than current user.</li>
  *   <li>{@link #existsById(Long)}: Checks if a user exists with the given ID.</li>
  * </ul>
  *
@@ -35,8 +34,6 @@ public interface UserRepository {
   User update(User user);
 
   void deleteById(Long id);
-
-  boolean existsEmail(String email, Long... userId);
 
   boolean existsById(Long id);
 
