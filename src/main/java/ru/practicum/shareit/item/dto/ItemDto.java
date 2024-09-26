@@ -4,11 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.validation.Create;
 import ru.practicum.shareit.validation.Update;
 
@@ -20,9 +21,10 @@ import ru.practicum.shareit.validation.Update;
  */
 @Data
 @Builder
+@Accessors(chain = true)
 public class ItemDto {
 
-  @Null(groups = Create.class, message = "Id should be null for the entity to be saved.")
+  @Null(groups = Create.class, message = "Id should be null for the item to be saved.")
   private Long id;
 
   @NotBlank(groups = Create.class, message = "Name can not be blank.")
@@ -40,8 +42,11 @@ public class ItemDto {
   @NotNull(groups = Create.class, message = "Available should be defined.")
   private Boolean available;
 
-  private User owner;
+  private BookingShortDto lastBooking;
 
-  private ItemRequest request;
+  private BookingShortDto nextBooking;
+
+  private List<CommentDto> comments;
+
 
 }

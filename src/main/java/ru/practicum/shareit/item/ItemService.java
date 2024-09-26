@@ -1,21 +1,25 @@
 package ru.practicum.shareit.item;
 
 import java.util.List;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.Item;
 
 /**
  * A service interface for managing item-related operations and interactions.
  * <p>
- * This interface provides methods for various operations related to items, such as creating,
- * updating, retrieving, and searching for items.
+ * This interface provides methods for creating, updating, retrieving, and searching for items. It handles
+ * various business logic and validation related to items, ensuring proper ownership and availability checks.
  * <p>
- * Methods include:
+ * The following methods are available:
  * <ul>
- *   <li>{@link #saveItem(Long, ItemDto)}: Adds a new item to the system for a specific user.</li>
- *   <li>{@link #updateItem(Long, ItemDto, Long)}: Updates an existing item identified by its ID, ensuring that only the owner can modify it.</li>
- *   <li>{@link #getUserItems(Long)}: Retrieves a list of all items owned by a specific user.</li>
- *   <li>{@link #getItemById(Long)}: Retrieves details of a specific item by its ID.</li>
- *   <li>{@link #searchItemsByPartialText(String)}: Searches for items based on a partial text match in the name or description, returning only available items.</li>
+ *   <li>{@link #saveItem(Long, ItemDto)}: Adds a new {@link Item} to the system for a specific user.</li>
+ *   <li>{@link #updateItem(Long, ItemDto, Long)}: Updates an existing {@link Item} identified by its ID, ensuring that only the owner can modify it.</li>
+ *   <li>{@link #getItemById(Long, Long)}: Retrieves detailed information about a specific {@link Item} by its ID, ensuring the owner or viewer can access it.</li>
+ *   <li>{@link #getUserItems(Long)}: Retrieves a list of all {@link ItemDto} entities owned by a specific user.</li>
+ *   <li>{@link #searchItemsByPartialText(String)}: Searches for {@link ItemDto} entities by a partial text match in the name or description, returning only available items.</li>
+ *   <li>{@link #addComment(Long, Long, CommentDto)}: Allows a user to add a {@link Comment} to a specific item.</li>
  * </ul>
  *
  * @see ItemDto
@@ -27,10 +31,13 @@ public interface ItemService {
 
   ItemDto updateItem(Long userId, ItemDto itemDto, Long itemId);
 
-  List<ItemDto> getUserItems(Long userId);
+  ItemDto getItemById(Long itemId, Long userId);
 
-  ItemDto getItemById(Long itemId);
+  Item getItemOrThrow(Long itemId);
+
+  List<ItemDto> getUserItems(Long userId);
 
   List<ItemDto> searchItemsByPartialText(String text);
 
+  CommentDto addComment(Long userId, Long itemId, CommentDto comment);
 }

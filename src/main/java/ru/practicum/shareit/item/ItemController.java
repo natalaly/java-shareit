@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.validation.Create;
 import ru.practicum.shareit.validation.Update;
@@ -34,15 +35,14 @@ import ru.practicum.shareit.validation.Update;
 public class ItemController {
 
   private static final String USER_ID_HEADER = "X-Sharer-User-Id";
-
   private final ItemService itemService;
 
   @PostMapping
   public ResponseEntity<ItemDto> addNewItem(@RequestHeader(USER_ID_HEADER) Long userId,
                                             @Validated(Create.class) @RequestBody ItemDto item) {
     log.info("Received request POST /items for user with ID {} to add item {}", userId, item);
-    ItemDto itemSaved = itemService.saveItem(userId, item);
-    URI location = ServletUriComponentsBuilder
+    final ItemDto itemSaved = itemService.saveItem(userId, item);
+    final URI location = ServletUriComponentsBuilder
         .fromCurrentRequest()
         .path("/{id}")
         .buildAndExpand(itemSaved.getId())
@@ -57,7 +57,7 @@ public class ItemController {
                                             @PathVariable("itemId") @NotNull @Positive Long itemId) {
     log.info("Received request PATCH /items/{} for user,ID {} to update with data {}", itemId,
         userId, item);
-    ItemDto itemUpdated = itemService.updateItem(userId, item, itemId);
+    final ItemDto itemUpdated = itemService.updateItem(userId, item, itemId);
     log.info("Item updated successfully: {}", itemUpdated);
     return ResponseEntity.ok(itemUpdated);
   }
@@ -66,7 +66,7 @@ public class ItemController {
   public ResponseEntity<List<ItemDto>> getAllItemFromUser(
       @RequestHeader(USER_ID_HEADER) Long userId) {
     log.info("Received request GET /items from user with ID {}.", userId);
-    List<ItemDto> items = itemService.getUserItems(userId);
+    final List<ItemDto> items = itemService.getUserItems(userId);
     log.info("Returning {} items from user {} ", items.size(), userId);
     return ResponseEntity.ok(items);
   }
@@ -75,7 +75,7 @@ public class ItemController {
   public ResponseEntity<ItemDto> getItemById(@RequestHeader(USER_ID_HEADER) Long userId,
                                              @PathVariable("itemId") @NotNull @Positive Long itemId) {
     log.info("Received request from user {} GET /items/{}.", userId, itemId);
-    ItemDto item = itemService.getItemById(itemId);
+    final ItemDto item = itemService.getItemById(itemId, userId);
     log.info("Returning item {} ", item);
     return ResponseEntity.ok(item);
   }
@@ -86,13 +86,25 @@ public class ItemController {
       @RequestParam(name = "text") @NotNull String text) {
     log.info("Received request GET /items/search?text={} for user with ID {}.", text,
         userId);
-    if (text.isBlank()) {
-      log.info("Search text is blank, returning empty results for user ID {}", userId);
-      return ResponseEntity.ok(List.of());
-    }
-    List<ItemDto> itemsFound = itemService.searchItemsByPartialText(text);
+    final List<ItemDto> itemsFound = itemService.searchItemsByPartialText(text);
     log.info("Found {} items ", itemsFound.size());
     return ResponseEntity.ok(itemsFound);
+  }
+
+  @PostMapping("/{itemId}/comment")
+  public ResponseEntity<CommentDto> addCommentToItem(@RequestHeader(USER_ID_HEADER) Long userId,
+                                                     @PathVariable("itemId") @NotNull @Positive Long itemId,
+                                                     @Validated(Create.class) @RequestBody CommentDto comment) {
+    log.info("Received request POST /items/{}/comment for user ID {} to add comment {}"
+        , itemId, userId, comment);
+    final CommentDto commentAdded = itemService.addComment(userId, itemId, comment);
+    final URI location = ServletUriComponentsBuilder
+        .fromCurrentRequest()
+        .path("/{id}/comment")
+        .buildAndExpand(commentAdded.getId())
+        .toUri();
+    log.info("Comment added successfully with ID {}", commentAdded.getId());
+    return ResponseEntity.ok().location(location).body(commentAdded);
   }
 
 }
