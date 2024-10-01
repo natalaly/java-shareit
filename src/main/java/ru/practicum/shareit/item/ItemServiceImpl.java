@@ -147,8 +147,8 @@ public class ItemServiceImpl implements ItemService {
   @Override
   @Transactional
   public CommentDto addComment(final Long userId, final Long itemId, final CommentDto comment) {
-    log.debug("Persisting a new comment with text: {} for item ID {} by user ID {}."
-        , comment, itemId, userId);
+    log.debug("Persisting a new comment with text: {} for item ID {} by user ID {}.",
+        comment, itemId, userId);
 
     final Item item = getItemOrThrow(itemId);
     final User user = userService.getByIdOrThrow(userId);

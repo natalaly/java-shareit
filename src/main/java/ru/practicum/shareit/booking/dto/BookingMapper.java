@@ -46,9 +46,9 @@ public class BookingMapper {
     if (bookings == null) {
       return Collections.emptyList();
     }
-    return bookings.stream().
-        map(BookingMapper::mapToResponseDto).
-        toList();
+    return bookings.stream()
+        .map(BookingMapper::mapToResponseDto)
+        .toList();
   }
 
   public BookingShortDto mapToShortDto(final Booking booking) {

@@ -84,8 +84,7 @@ public class ItemController {
   public ResponseEntity<List<ItemDto>> searchItemByPartialText(
       @RequestHeader(USER_ID_HEADER) Long userId,
       @RequestParam(name = "text") @NotNull String text) {
-    log.info("Received request GET /items/search?text={} for user with ID {}.", text,
-        userId);
+    log.info("Received request GET /items/search?text={} for user with ID {}.", text, userId);
     final List<ItemDto> itemsFound = itemService.searchItemsByPartialText(text);
     log.info("Found {} items ", itemsFound.size());
     return ResponseEntity.ok(itemsFound);
@@ -95,8 +94,8 @@ public class ItemController {
   public ResponseEntity<CommentDto> addCommentToItem(@RequestHeader(USER_ID_HEADER) Long userId,
                                                      @PathVariable("itemId") @NotNull @Positive Long itemId,
                                                      @Validated(Create.class) @RequestBody CommentDto comment) {
-    log.info("Received request POST /items/{}/comment for user ID {} to add comment {}"
-        , itemId, userId, comment);
+    log.info("Received request POST /items/{}/comment for user ID {} to add comment {}",
+        itemId, userId, comment);
     final CommentDto commentAdded = itemService.addComment(userId, itemId, comment);
     final URI location = ServletUriComponentsBuilder
         .fromCurrentRequest()
