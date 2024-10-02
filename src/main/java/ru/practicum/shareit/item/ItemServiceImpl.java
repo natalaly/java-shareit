@@ -74,7 +74,6 @@ public class ItemServiceImpl implements ItemService {
   @Override
   public ItemDto getItemById(final Long itemId, final Long userId) {
     log.debug("Retrieving item with ID = {}.", itemId);
-    validateUser(userId);
 
     final Item item = getItemOrThrow(itemId);
     LocalDateTime now = LocalDateTime.now();
