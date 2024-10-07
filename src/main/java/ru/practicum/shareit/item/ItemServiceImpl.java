@@ -178,7 +178,7 @@ public class ItemServiceImpl implements ItemService {
     return bookings.stream()
         .filter(b -> b.getEnd().isBefore(point))
         .max(Comparator.comparing(Booking::getEnd))
-        .map(BookingMapper::mapToShortDto) // Assuming you have a mapper for this
+        .map(BookingMapper::mapToShortDto)
         .orElse(null);
   }
 
@@ -189,7 +189,7 @@ public class ItemServiceImpl implements ItemService {
     return bookings.stream()
         .filter(b -> b.getStart().isAfter(point))
         .min(Comparator.comparing(Booking::getStart))
-        .map(BookingMapper::mapToShortDto) // Assuming you have a mapper for this
+        .map(BookingMapper::mapToShortDto)
         .orElse(null);
   }
 

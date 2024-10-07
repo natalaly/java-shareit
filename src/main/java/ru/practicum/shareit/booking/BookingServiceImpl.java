@@ -188,11 +188,11 @@ public class BookingServiceImpl implements BookingService {
         item.getId(), booking.getStart(), booking.getEnd());
     if (!item.isAvailable()) {
       log.warn("Item with ID {} is unavailable, available status = {}.", item.getId(),
-          item.isAvailable());
+          false);
       throw new ValidationException(
           "Item is currently unavailable for borrowing.");
     }
-    log.debug("ID {} has available status = {}", item.getId(), item.isAvailable());
+    log.debug("ID {} has available status = {}", item.getId(), true);
 
     validateItemNotBooked(item.getId(), booking.getStart(), booking.getEnd());
     log.debug("Success: Item ID {} has not time overlap and is available for booking.",
