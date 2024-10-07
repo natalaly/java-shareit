@@ -2,47 +2,44 @@ package ru.practicum.shareit.item;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
 
 /**
- * A repository interface for managing item persistence and retrieval operations.
+ * A repository interface for managing {@link Item} persistence and retrieval operations.
  * <p>
- * This interface defines methods for common CRUD operations on item data, as well as additional
- * methods for specific queries like finding items by user ID, searching by text, and checking the
- * existence of items owned by a user.
+ * This interface defines methods for performing common CRUD operations on {@link Item} entities, as
+ * well as additional queries for retrieving items by their owner, searching for items by text, and
+ * checking item ownership.
  * <p>
- * Methods include:
+ * In addition to the standard CRUD operations provided by {@link JpaRepository}, the following
+ * methods are included:
  * <ul>
- *   <li>{@link #save(Item)}: Saves a new item to the storage.</li>
- *   <li>{@link #update(Item)}: Updates an existing item in the storage.</li>
- *   <li>{@link #findById(Long)}: Retrieves an item by its ID.</li>
- *   <li>{@link #findByItemIdAndOwnerId(Long, Long)}: Retrieves an item by its ID and owner ID.</li>
- *   <li>{@link #findAllByUserId(Long)}: Retrieves all items owned by a specific user.</li>
- *   <li>{@link #findByText(String)}: Searches for items containing the specified text in their name or description.</li>
- *   <li>{@link #deleteByOwnerId(Long)}: Deletes all items owned by a specific user.</li>
- *   <li>{@link #isExistedOwner(Long)}: Checks if there are any items owned by a specific user.</li>
+ *   <li>{@link #findByIdAndOwnerId(Long, Long)}: Retrieves an {@link Item} by its ID and the owner's ID.</li>
+ *   <li>{@link #findAllByOwnerIdOrderById(Long)}: Retrieves a list of {@link Item} entities owned by a specific user, ordered by item ID.</li>
+ *   <li>{@link #findByText(String)}: Searches for available {@link Item} entities where the name or description contains the specified text.</li>
+ *   <li>{@link #existsByOwnerId(Long)}: Checks whether any {@link Item} entities exist for a given owner ID.</li>
  * </ul>
  *
  * @see Item
- * @see ItemRepositoryInMemory
- * @see UserService
+ * @see JpaRepository
  */
-public interface ItemRepository {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-  Item save(Item item);
+  Optional<Item> findByIdAndOwnerId(Long itemId, Long ownerId);
 
-  Item update(Item item);
+  List<Item> findAllByOwnerIdOrderById(Long ownerId);
 
-  Optional<Item> findById(Long itemId);
+  @Query("""
+      select it
+      from Item as it
+      where it.available = true
+      and (lower(it.name) like lower(concat('%', :text, '%'))
+      or lower(it.description) like lower(concat('%', :text, '%')))
+      """)
+  List<Item> findByText(@Param("text") String text);
 
-  Optional<Item> findByItemIdAndOwnerId(Long itemId, Long ownerId);
-
-  List<Item> findAllByUserId(Long ownerId);
-
-  List<Item> findByText(String text);
-
-  void deleteByOwnerId(Long ownerId);
-
-  boolean isExistedOwner(Long userId);
+  boolean existsByOwnerId(Long userId);
 }
