@@ -42,6 +42,7 @@ public class ItemMapper {
         .name(item.getName())
         .description(item.getDescription())
         .available(item.isAvailable())
+        .requestId(item.getRequest() == null ? null : item.getRequest().getId())
         .build();
   }
 
@@ -66,6 +67,7 @@ public class ItemMapper {
   }
 
   public Item mapToItem(final ItemDto itemDto, final User owner) {
+    log.debug("Mapping ItemDto {} to Item.", itemDto);
     Objects.requireNonNull(itemDto, "ItemDto cannot be null.");
     return Item.builder()
         .id(itemDto.getId())

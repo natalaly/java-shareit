@@ -21,6 +21,7 @@ import ru.practicum.shareit.item.model.Item;
  *   <li>{@link #findAllByOwnerIdOrderById(Long)}: Retrieves a list of {@link Item} entities owned by a specific user, ordered by item ID.</li>
  *   <li>{@link #findByText(String)}: Searches for available {@link Item} entities where the name or description contains the specified text.</li>
  *   <li>{@link #existsByOwnerId(Long)}: Checks whether any {@link Item} entities exist for a given owner ID.</li>
+ *   <li>{@link #findByRequestIdIn(List)}: Retrieves items associated with a list of item request IDs.</li>
  * </ul>
  *
  * @see Item
@@ -42,4 +43,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
   List<Item> findByText(@Param("text") String text);
 
   boolean existsByOwnerId(Long userId);
+
+  List<Item> findByRequestIdIn(List<Long> requestIds);
 }

@@ -140,13 +140,12 @@ public class BookingServiceImpl implements BookingService {
   }
 
   private List<Booking> getPastByOwner(final Long ownerId, final LocalDateTime now) {
-    return bookingRepository.findAllByItemOwnerIdAndStatusAndEndBeforeOrderByStartDesc(
-        ownerId, BookingStatus.APPROVED, now);
+    return bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, now);
   }
 
   private List<Booking> getCurrentByOwner(final Long ownerId, final LocalDateTime now) {
-    return bookingRepository.findAllByItemOwnerIdAndStatusAndStartBeforeAndEndAfterOrderByStartDesc(
-        ownerId, BookingStatus.APPROVED, now, now);
+    return bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+        ownerId, now);
   }
 
   private List<Booking> getAllByOwnerAndStatus(final Long ownerId, final BookingStatus status) {
@@ -159,14 +158,12 @@ public class BookingServiceImpl implements BookingService {
   }
 
   private List<Booking> getPastByBooker(final Long bookerId, final LocalDateTime now) {
-    return bookingRepository.findByBookerIdAndStatusAndEndBeforeOrderByStartDesc(
-        bookerId, BookingStatus.APPROVED, now);
+    return bookingRepository.findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, now);
   }
 
   private List<Booking> getCurrentByBooker(final Long bookerId, final LocalDateTime now) {
-    return bookingRepository.findAllByBookerIdAndStatusAndStartBeforeAndEndAfterOrderByStartDesc(
-        bookerId, BookingStatus.APPROVED,
-        now, now);
+    return bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+        bookerId, now);
   }
 
   private List<Booking> getAllByBookerAndStatus(final Long bookerId, final BookingStatus status) {

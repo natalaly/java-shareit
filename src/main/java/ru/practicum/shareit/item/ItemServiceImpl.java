@@ -24,6 +24,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -45,6 +46,7 @@ public class ItemServiceImpl implements ItemService {
   private final UserService userService;
   private final BookingRepository bookingRepository;
   private final CommentRepository commentRepository;
+  private final ItemRequestRepository requestRepository;
 
   @Override
   @Transactional
@@ -53,6 +55,7 @@ public class ItemServiceImpl implements ItemService {
     final User owner = UserMapper.mapToUser(userService.getUserById(userId));
 
     final Item itemToSave = ItemMapper.mapToItem(itemDto, owner);
+    setRequest(itemToSave, itemDto);
 
     return ItemMapper.mapToItemDto(itemRepository.save(itemToSave));
   }
@@ -64,9 +67,7 @@ public class ItemServiceImpl implements ItemService {
     validateOwner(userId);
 
     final Item itemToUpdate = getItemByIdAndOwnerOrThrow(itemId, userId);
-    Optional.ofNullable(itemDto.getName()).ifPresent(itemToUpdate::setName);
-    Optional.ofNullable(itemDto.getDescription()).ifPresent(itemToUpdate::setDescription);
-    Optional.ofNullable(itemDto.getAvailable()).ifPresent(itemToUpdate::setAvailable);
+    updateItemFields(itemToUpdate, itemDto);
 
     return ItemMapper.mapToItemDto(itemRepository.save(itemToUpdate));
   }
@@ -102,12 +103,12 @@ public class ItemServiceImpl implements ItemService {
   public List<ItemDto> getUserItems(final Long userId) {
     log.debug("Retrieving items owned by user with ID = {}.", userId);
     validateOwner(userId);
-    LocalDateTime now = LocalDateTime.now();
 
     final List<Item> ownerItems = itemRepository.findAllByOwnerIdOrderById(userId);
     if (ownerItems.isEmpty()) {
       return Collections.emptyList();
     }
+    LocalDateTime now = LocalDateTime.now();
 
     final Map<Long, List<Booking>> bookingsForItems =
         bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId)
@@ -159,6 +160,25 @@ public class ItemServiceImpl implements ItemService {
     return CommentMapper.mapToCommentDto(commentRepository.save(commentToSave));
   }
 
+  @Override
+  public List<ItemDto> getItemByRequestIds(final List<Long> requestIds) {
+    log.debug("Retrieving items related to the given requests IDs.");
+    return ItemMapper.mapToItemDto(itemRepository.findByRequestIdIn(requestIds));
+  }
+
+  private void setRequest(final Item targetItem, final ItemDto sourceData) {
+    log.debug("setting Request property from {} to the item.", sourceData);
+    Optional.ofNullable(sourceData.getRequestId())
+        .flatMap(requestRepository::findById)
+        .ifPresent(targetItem::setRequest);
+  }
+
+  private void updateItemFields(final Item targetItem, final ItemDto dataSource) {
+    Optional.ofNullable(dataSource.getName()).ifPresent(targetItem::setName);
+    Optional.ofNullable(dataSource.getDescription()).ifPresent(targetItem::setDescription);
+    Optional.ofNullable(dataSource.getAvailable()).ifPresent(targetItem::setAvailable);
+  }
+
   private void validateBookingsByBookerAndItem(final Long itemId, final Long userId,
                                                final LocalDateTime now) {
     log.debug("Fetching PAST bookings for itemId {}, bookerId {}.", itemId, userId);
@@ -176,7 +196,8 @@ public class ItemServiceImpl implements ItemService {
       return null;
     }
     return bookings.stream()
-        .filter(b -> b.getEnd().isBefore(point))
+        .filter(b -> !b.getStatus().equals(BookingStatus.REJECTED)
+            && (b.getStart().isBefore(point) || b.getStart().isEqual(point)))
         .max(Comparator.comparing(Booking::getEnd))
         .map(BookingMapper::mapToShortDto)
         .orElse(null);
@@ -187,7 +208,8 @@ public class ItemServiceImpl implements ItemService {
       return null;
     }
     return bookings.stream()
-        .filter(b -> b.getStart().isAfter(point))
+        .filter(b -> !b.getStatus().equals(BookingStatus.REJECTED)
+            && b.getStart().isAfter(point))
         .min(Comparator.comparing(Booking::getStart))
         .map(BookingMapper::mapToShortDto)
         .orElse(null);
@@ -216,7 +238,6 @@ public class ItemServiceImpl implements ItemService {
   }
 
   private void validateUser(final Long userId) {
-    log.debug("Validating user existence for user ID = {}.", userId);
     userService.validateUserExist(userId);
   }
 
