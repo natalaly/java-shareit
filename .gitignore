@@ -31,4 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
-/docker/
+/volumes/
+.DS_Store
+*.db
+db/*
