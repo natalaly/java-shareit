@@ -14,10 +14,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
 import java.time.LocalDateTime;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -53,13 +55,14 @@ class BookingControllerTest {
         .end(LocalDateTime.now().plusDays(2)).build();
 
     when(client.bookItem(anyLong(), any(BookingDto.class)))
-        .thenReturn(ResponseEntity.created(null).build());
+        .thenReturn(ResponseEntity.created(URI.create("created")).body("created"));
 
     mvc.perform(post("/bookings")
             .header(HeaderConstants.USER_ID_HEADER, userId)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(bookingDto)))
-        .andExpect(status().isCreated());
+        .andExpect(status().isCreated())
+        .andExpect(content().string("created"));;
 
     verify(client, times(1))
         .bookItem(eq(userId), any(BookingDto.class));
