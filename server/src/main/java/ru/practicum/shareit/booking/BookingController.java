@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.utils.HeaderConstants;
 
 /**
  * REST controller for managing bookings. This controller handles operations related to booking
@@ -30,7 +31,7 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 @Validated
 public class BookingController {
 
-  private static final String USER_ID_HEADER = "X-Sharer-User-Id";
+  private static final String USER_ID_HEADER = HeaderConstants.USER_ID_HEADER;
   private final BookingService bookingService;
 
   @PostMapping
@@ -67,7 +68,7 @@ public class BookingController {
   public ResponseEntity<BookingResponseDto> getBookingById(
       @RequestHeader(USER_ID_HEADER) Long userId,
       @PathVariable("bookingId")  Long bookingId) {
-    log.info("Received GET /bookings/{} frim user ID {}.", bookingId, userId);
+    log.info("Received GET /bookings/{} from user ID {}.", bookingId, userId);
     final BookingResponseDto booking = bookingService.getBookingById(bookingId, userId);
     log.info("Returning booking data: {}", booking);
     return ResponseEntity.ok(booking);

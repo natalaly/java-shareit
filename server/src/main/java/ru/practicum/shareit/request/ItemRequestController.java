@@ -51,7 +51,7 @@ public class ItemRequestController {
   public ResponseEntity<List<ItemRequestDto>> getOwnItemRequests(
       @RequestHeader(USER_ID_HEADER) Long userId) {
     log.info("Received request GET /requests from requestor with ID {}.", userId);
-    final List<ItemRequestDto> requests = requestService.getUserItemReqiests(userId);
+    final List<ItemRequestDto> requests = requestService.getUserItemRequests(userId);
     log.info("Returning {} item requests from user {} ", requests.size(), userId);
     return ResponseEntity.ok(requests);
   }

@@ -14,7 +14,7 @@ import ru.practicum.shareit.validation.EndAfterStart;
  */
 @Data
 @Builder
-@EndAfterStart
+@EndAfterStart(message = "Invalid date. End date should be after start date.")
 public class BookingDto {
 
   @NotNull(message = "Invalid date. Start date can not be null.")

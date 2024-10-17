@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.validation.Update;
 
 /**
  * REST controller for managing users. Provides endpoints for creating, updating, retrieving, and
@@ -49,8 +47,8 @@ public class UserController {
   }
 
   @PatchMapping("/{userId}")
-  public ResponseEntity<UserDto> updateUser(
-      @Validated(Update.class) @RequestBody UserDto user, @PathVariable("userId") Long userId) {
+  public ResponseEntity<UserDto> updateUser(@RequestBody UserDto user,
+                                            @PathVariable("userId") Long userId) {
     log.info("Received request PATCH /users/{} to update with data: {}", userId, user);
     final UserDto userUpdated = userService.updateUser(user, userId);
     log.info("User updated successfully with ID {}", userUpdated.getId());

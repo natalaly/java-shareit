@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.utils.HeaderConstants;
 
 /**
  * REST controller for managing items. Provides endpoints for adding, updating, retrieving, and
@@ -30,7 +31,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 @Validated
 public class ItemController {
 
-  private static final String USER_ID_HEADER = "X-Sharer-User-Id";
+  private static final String USER_ID_HEADER = HeaderConstants.USER_ID_HEADER;
   private final ItemService itemService;
 
   @PostMapping
@@ -95,7 +96,7 @@ public class ItemController {
     final CommentDto commentAdded = itemService.addComment(userId, itemId, comment);
     final URI location = ServletUriComponentsBuilder
         .fromCurrentRequest()
-        .path("/{id}/comment")
+        .path("/{id}")
         .buildAndExpand(commentAdded.getId())
         .toUri();
     log.info("Comment added successfully with ID {}", commentAdded.getId());

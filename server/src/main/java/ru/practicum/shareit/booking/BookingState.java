@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +42,7 @@ public enum BookingState {
   }
 
   public static BookingState fromString(final String state) {
+    Objects.requireNonNull(state, "Invalid state value.");
     for (BookingState bs : BookingState.values()) {
       if (bs.name().equalsIgnoreCase(state.trim())) {
         return bs;

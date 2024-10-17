@@ -16,7 +16,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
  *     {@link #saveRequest(Long, ItemRequestDto)}: Saves a new item request made by a user.
  *   </li>
  *   <li>
- *     {@link #getUserItemReqiests(Long)}: Retrieves item requests made by a specific user.
+ *     {@link #getUserItemRequests(Long)}: Retrieves item requests made by a specific user.
  *   </li>
  *   <li>
  *     {@link #getAll(Long)}: Retrieves a list of item requests created by other users.
@@ -30,7 +30,7 @@ public interface ItemRequestService {
 
   ItemRequestDto saveRequest(Long userId, ItemRequestDto request);
 
-  List<ItemRequestDto> getUserItemReqiests(Long requestorId);
+  List<ItemRequestDto> getUserItemRequests(Long requestorId);
 
   List<ItemRequestDto> getAll(Long userId);
 

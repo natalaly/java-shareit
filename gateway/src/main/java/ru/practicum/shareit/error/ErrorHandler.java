@@ -8,12 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.practicum.shareit.exception.ValidationException;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice("ru.practicum.shareit")
+@RestControllerAdvice("ru.practicum.shareit")
 @Slf4j
 public class ErrorHandler {
 
@@ -31,12 +30,12 @@ public class ErrorHandler {
     return new ValidationErrorResponse(errorMessages);
   }
 
-  @ExceptionHandler
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ErrorResponse handleValidationException(final ValidationException e) {
-    log.error("Validation exception was thrown: {}", e.getMessage());
-    return new ErrorResponse(e.getMessage());
-  }
+//  @ExceptionHandler
+//  @ResponseStatus(HttpStatus.BAD_REQUEST)
+//  public ErrorResponse handleValidationException(final ValidationException e) {
+//    log.error("Validation exception was thrown: {}", e.getMessage());
+//    return new ErrorResponse(e.getMessage());
+//  }
 
   @ExceptionHandler
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

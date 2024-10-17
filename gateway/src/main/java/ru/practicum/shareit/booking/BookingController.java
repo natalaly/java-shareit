@@ -1,8 +1,10 @@
 package ru.practicum.shareit.booking;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import jakarta.validation.constraints.Positive;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.utils.HeaderConstants;
 import ru.practicum.shareit.validation.ValidState;
@@ -24,7 +23,7 @@ import ru.practicum.shareit.validation.ValidState;
  * Controller for handling booking-related requests. Manages creation, status update, and retrieval
  * of bookings for users and owners.
  */
-@Controller
+@RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @Slf4j

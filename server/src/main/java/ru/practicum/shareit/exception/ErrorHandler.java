@@ -1,12 +1,8 @@
 package ru.practicum.shareit.exception;
 
 
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,20 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice("ru.practicum.shareit")
 @Slf4j
 public class ErrorHandler {
-
-  @ExceptionHandler
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ValidationErrorResponse handlerMethodArgumentNotValidException(
-      final MethodArgumentNotValidException e) {
-
-    final List<String> errorMessages = e.getBindingResult().getAllErrors()
-        .stream()
-        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-        .toList();
-
-    log.warn("MethodArgumentNotValidException was thrown: {}", e.getMessage());
-    return new ValidationErrorResponse(errorMessages);
-  }
 
   @ExceptionHandler
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -70,18 +52,5 @@ public class ErrorHandler {
     log.error("Unexpected error occurred: ", e);
     return new ErrorResponse("Internal server error.");
   }
-
-//  @ExceptionHandler
-//  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//  public ErrorResponse handleConstraintViolationException(final ConstraintViolationException e) {
-//    log.error("Unexpected error occurred: {}", e.getMessage());
-//    final String message = e.getConstraintViolations()
-//        .stream()
-//        .map(ConstraintViolation::getMessage)
-//        .findFirst()
-//        .orElse("Invalid request parameter.");
-//    return new ErrorResponse(message);
-//  }
-
 
 }

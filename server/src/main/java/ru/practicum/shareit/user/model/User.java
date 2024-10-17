@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * Represents a user entity in the ShareIt app.
@@ -26,6 +27,7 @@ import lombok.Setter;
 @Getter
 @EqualsAndHashCode(exclude = {"id"})
 @Builder
+@Accessors(chain = true)
 public class User {
 
   @Id

@@ -166,9 +166,9 @@ public class ItemServiceImpl implements ItemService {
     return ItemMapper.mapToItemDto(itemRepository.findByRequestIdIn(requestIds));
   }
 
-  private void setRequest(final Item targetItem, final ItemDto sourceData) {
-    log.debug("setting Request property from {} to the item.", sourceData);
-    Optional.ofNullable(sourceData.getRequestId())
+  private void setRequest(final Item targetItem, final ItemDto sourceItem) {
+    log.debug("setting Request property from {} to the item.", sourceItem);
+    Optional.ofNullable(sourceItem.getRequestId())
         .flatMap(requestRepository::findById)
         .ifPresent(targetItem::setRequest);
   }
@@ -192,7 +192,7 @@ public class ItemServiceImpl implements ItemService {
   }
 
   private BookingShortDto getLastBooking(final List<Booking> bookings, final LocalDateTime point) {
-    if (bookings == null) {
+    if (bookings == null || bookings.isEmpty()) {
       return null;
     }
     return bookings.stream()

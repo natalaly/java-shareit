@@ -46,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
     final User booker = userService.getByIdOrThrow(userId);
     final Item itemToBook = itemService.getItemOrThrow(bookingDto.getItemId());
 
-    if (userId.equals(itemToBook.getId())) {
+    if (userId.equals(itemToBook.getOwner().getId())) {
       throw new NotFoundException("Booker can not be owner of item to book.");
     }
     validateItemAvailable(itemToBook, bookingDto);
@@ -107,27 +107,27 @@ public class BookingServiceImpl implements BookingService {
   }
 
   private List<BookingResponseDto> getBookingsForUserOrOwner(
-      final Long id, final String state, final boolean isUser) {
+      final Long id, final String state, final boolean isBooker) {
     LocalDateTime now = LocalDateTime.now();
 
     final List<Booking> bookings =
         switch (BookingState.fromString(state)) {
-          case WAITING -> isUser ?
+          case WAITING -> isBooker ?
               getAllByBookerAndStatus(id, BookingStatus.WAITING)
               : getAllByOwnerAndStatus(id, BookingStatus.WAITING);
-          case REJECTED -> isUser ?
+          case REJECTED -> isBooker ?
               getAllByBookerAndStatus(id, BookingStatus.REJECTED)
               : getAllByOwnerAndStatus(id, BookingStatus.REJECTED);
-          case CURRENT -> isUser ?
+          case CURRENT -> isBooker ?
               getCurrentByBooker(id, now)
               : getCurrentByOwner(id, now);
-          case PAST -> isUser ?
+          case PAST -> isBooker ?
               getPastByBooker(id, now)
               : getPastByOwner(id, now);
-          case FUTURE -> isUser ?
+          case FUTURE -> isBooker ?
               getFutureByBooker(id, now)
               : getFutureByOwner(id, now);
-          default -> isUser ?
+          default -> isBooker ?
               bookingRepository.findAllByBookerIdOrderByStartDesc(id)
               : bookingRepository.findAllByItemOwnerIdOrderByStartDesc(id);
         };

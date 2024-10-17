@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -32,6 +33,7 @@ import ru.practicum.shareit.user.model.User;
 @Getter
 @EqualsAndHashCode
 @Builder
+@Accessors(chain = true)
 public class Item {
 
   @Id

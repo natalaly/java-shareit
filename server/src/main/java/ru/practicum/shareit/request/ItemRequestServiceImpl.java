@@ -23,6 +23,7 @@ import ru.practicum.shareit.user.model.User;
  * @see ItemRequestDto
  * @see ItemRequestRepository
  */
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -39,20 +40,20 @@ public class ItemRequestServiceImpl implements ItemRequestService {
   public ItemRequestDto saveRequest(final Long userId, final ItemRequestDto request) {
     log.debug("Persisting a new request with data: {} from user with ID {}.", request, userId);
 
-    final User requestor = userService.getByIdOrThrow(userId);
+    final User requester = userService.getByIdOrThrow(userId);
 
-    final ItemRequest requestToSave = ItemRequestMapper.mapToItemRequest(request, requestor);
+    final ItemRequest requestToSave = ItemRequestMapper.mapToItemRequest(request, requester);
 
     return ItemRequestMapper.mapToItemRequestDto(requestRepository.save(requestToSave));
   }
 
   @Override
-  public List<ItemRequestDto> getUserItemReqiests(final Long requestorId) {
-    log.debug("Retrieving item requests for the requestor ID = {}.", requestorId);
-    validateUser(requestorId);
+  public List<ItemRequestDto> getUserItemRequests(final Long requesterId) {
+    log.debug("Retrieving item requests for the requester ID = {}.", requesterId);
+    validateUser(requesterId);
 
     final List<ItemRequest> ownerRequests =
-        requestRepository.findByRequestorIdOrderByCreatedDesc(requestorId);
+        requestRepository.findByRequestorIdOrderByCreatedDesc(requesterId);
     if (ownerRequests.isEmpty()) {
       return Collections.emptyList();
     }
